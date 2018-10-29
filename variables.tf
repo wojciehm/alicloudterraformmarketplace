@@ -1,11 +1,11 @@
 ######### Access Key ###############
 variable "access_key" {
 	  type = "string"
-	  default = ""
+	  default = "XXXXXXXXXX"
 }
 variable "secret_key" {
 	  type = "string"
-	  default = ""
+	  default = "XXXXXXXXX"
 }
 variable "region" {
 	  type = "string"
@@ -69,7 +69,7 @@ variable "datacenter" {
   default = "Frankfurt"
 }
 variable "ecs_type" {
-  default = "ecs.t5-c1m1.large"
+  default = "ecs.sn2ne.large"
 }
 variable "ecs_password" {
   default = "test12345"
@@ -89,11 +89,6 @@ variable "disk_category" {
 variable "disk_size" {
   default = "40"
 }
-/*
-#variable "ecs_id2"{
-	default = "opensuse_42_03_64_20G_alibase_20171031.vhd"
-}
-*/
 variable "ecs_id" {
 	default = "m-gw8azd6ceetnqxll05o7"
 }
@@ -127,7 +122,7 @@ variable "password" {
 }
 
 variable "database_name" {
-  default = "databaseMagento"
+  default = "blah"
 }
 
 variable "database_character" {

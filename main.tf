@@ -5,22 +5,22 @@ provider "alicloud" {
 }
 ##################VPC####################
 resource "alicloud_vpc" "main" {
-		name = "${var.vpc_name}"
-		cidr_block = "${var.vpc_cidr}"
+		name 				= "${var.vpc_name}"
+		cidr_block 	= "${var.vpc_cidr}"
 }
 ############## vswitch ################
 resource "alicloud_vswitch" "main"{
-		vpc_id = "${alicloud_vpc.main.id}"
-		cidr_block = "${var.vswitch_cidr}"
+		vpc_id 						= "${alicloud_vpc.main.id}"
+		cidr_block 				= "${var.vswitch_cidr}"
 	  availability_zone = "${var.vpc_availability_zone}"
-	  depends_on = [
-	  "alicloud_vpc.main",
-	  ]
+	  depends_on 				= [
+	  									"alicloud_vpc.main",
+	  									]
 }
 ################### SG ###############
 resource "alicloud_security_group" "main" {
-		name = "${var.security_group}"
-		vpc_id = "${alicloud_vpc.main.id}"
+		name		= "${var.security_group}"
+		vpc_id	= "${alicloud_vpc.main.id}"
 }
 
 ################## SG rules ##############
@@ -28,7 +28,8 @@ resource "alicloud_security_group" "main" {
 resource "alicloud_security_group_rule" "http-in" {
 	  type = "ingress"
 		ip_protocol = "tcp"
-	  nic_type  = "internet"
+	  #nic_type  = "internet"
+		nic_type = "intranet"
 		policy = "accept"
 	  port_range = "80/80"
 	  priority = 1
@@ -38,7 +39,8 @@ resource "alicloud_security_group_rule" "http-in" {
 resource "alicloud_security_group_rule" "ssh-in" {
 	  type = "ingress"
 	  ip_protocol = "tcp"
-	  nic_type = "internet"
+	  nic_type = "intranet"
+		#nic_type = "internet"
     policy = "accept"
 	  port_range = "22/22"
 	  priority = 1
@@ -46,20 +48,17 @@ resource "alicloud_security_group_rule" "ssh-in" {
 	  cidr_ip = "0.0.0.0/0"
 }
 ############################Magento#######################
-
 data "alicloud_images" "ecs_image" {
-  #most_recent = "${var.most_recent}"
+  most_recent = "${var.most_recent}"
   owners      = "${var.image_owners}"
   name_regex  = "${var.name_regex}"
 }
-
 resource "alicloud_disk" "disk" {
   availability_zone = "${var.vpc_availability_zone}"
   category          = "${var.disk_category}"
   size              = "${var.disk_size}"
   count             = "${var.count}"
 }
-
 resource "alicloud_instance" "instance" {
   instance_name     = "${var.role}"
   host_name         = "${var.role}"
@@ -67,13 +66,11 @@ resource "alicloud_instance" "instance" {
 	instance_type     = "${var.ecs_type}"
   count             = "${var.count}"
   availability_zone = "${var.vpc_availability_zone}"
-  security_groups   = ["${alicloud_security_group.main.*.id}"]
-
-  internet_charge_type       = "${var.internet_charge_type}"
-  internet_max_bandwidth_out = "${var.internet_max_bandwidth_out}"
-
-  password = "${var.ecs_password}"
-
+	security_groups   = ["${alicloud_security_group.main.id}"]
+  vswitch_id				= "${alicloud_vswitch.main.id}"
+  #internet_charge_type       = "${var.internet_charge_type}"
+  #internet_max_bandwidth_out = "${var.internet_max_bandwidth_out}"
+  #password = "${var.ecs_password}"
   instance_charge_type = "PostPaid"
   system_disk_category = "cloud_efficiency"
 
@@ -82,14 +79,18 @@ resource "alicloud_instance" "instance" {
     dc = "${var.datacenter}"
   }
 }
-
+#################### EIP ###########################
+resource "alicloud_eip" "eip" {}
+resource "alicloud_eip_association" "attach" {
+  allocation_id = "${alicloud_eip.eip.id}"
+  instance_id   = "${alicloud_instance.instance.id}"
+}
 resource "alicloud_disk_attachment" "instance-attachment" {
   count       = "${var.count}"
   disk_id     = "${element(alicloud_disk.disk.*.id, count.index)}"
   instance_id = "${element(alicloud_instance.instance.*.id, count.index)}"
 }
-################### RD ###########################
-
+################### RDS ###########################
 resource "alicloud_db_instance" "instance" {
   engine           = "${var.engine}"
   engine_version   = "${var.engine_version}"
@@ -97,31 +98,26 @@ resource "alicloud_db_instance" "instance" {
   instance_storage = "${var.storage}"
   vswitch_id       = "${var.vswitch_id == "" ? alicloud_vswitch.main.id : var.vswitch_id}"
 }
-
 resource "alicloud_db_account" "account" {
   count       = 1
   instance_id = "${alicloud_db_instance.instance.id}"
   name        = "tf_account"
   password    = "${var.password}"
 }
-
 resource "alicloud_db_backup_policy" "backup" {
   instance_id   = "${alicloud_db_instance.instance.id}"
   backup_period = ["Tuesday", "Wednesday"]
   backup_time   = "10:00Z-11:00Z"
 }
-
 resource "alicloud_db_connection" "connection" {
   instance_id       = "${alicloud_db_instance.instance.id}"
   connection_prefix = "tf-connection"
 }
-
 resource "alicloud_db_database" "db" {
   count       = 1
   instance_id = "${alicloud_db_instance.instance.id}"
   name        = "${var.database_name}"
 }
-
 resource "alicloud_db_account_privilege" "privilege" {
   count        = 1
   instance_id  = "${alicloud_db_instance.instance.id}"
