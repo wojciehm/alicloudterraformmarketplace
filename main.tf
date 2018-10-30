@@ -69,10 +69,10 @@ resource "alicloud_instance" "instance" {
   	instance_charge_type 	= "PostPaid"
   	system_disk_category 	= "cloud_efficiency"
 
-  tags {
-    role = "${var.role}"
-    dc = "${var.datacenter}"
-  }
+	tags {
+		role	= "${var.role}"
+		dc 	= "${var.datacenter}"
+	  }
 }
 #################### EIP ###########################
 resource "alicloud_eip" "eip" {}
