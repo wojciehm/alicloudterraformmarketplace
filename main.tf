@@ -1,12 +1,12 @@
 provider "alicloud" {
-	  access_key = "${var.access_key}"
-	  secret_key = "${var.secret_key}"
-	  region     = "${var.region}"
+	access_key = "${var.access_key}"
+	secret_key = "${var.secret_key}"
+	region     = "${var.region}"
 }
 ##################VPC####################
 resource "alicloud_vpc" "main" {
-		name 		= "${var.vpc_name}"
-		cidr_block 	= "${var.vpc_cidr}"
+	name 		= "${var.vpc_name}"
+	cidr_block 	= "${var.vpc_cidr}"
 }
 ############## vswitch ################
 resource "alicloud_vswitch" "main"{
