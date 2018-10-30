@@ -10,16 +10,16 @@ resource "alicloud_vpc" "main" {
 }
 ############## vswitch ################
 resource "alicloud_vswitch" "main"{
-		vpc_id 						= "${alicloud_vpc.main.id}"
-		cidr_block 				= "${var.vswitch_cidr}"
-	  availability_zone = "${var.vpc_availability_zone}"
-	  depends_on 				= [
+	vpc_id 			= "${alicloud_vpc.main.id}"
+	cidr_block 		= "${var.vswitch_cidr}"
+	availability_zone 	= "${var.vpc_availability_zone}"
+	depends_on		= [
 	  "alicloud_vpc.main",
 	  ]
 }
 ################### SG ###############
 resource "alicloud_security_group" "main" {
-		name		= "${var.security_group}"
+		name	= "${var.security_group}"
 		vpc_id	= "${alicloud_vpc.main.id}"
 }
 
@@ -27,7 +27,7 @@ resource "alicloud_security_group" "main" {
 
 resource "alicloud_security_group_rule" "http-in" {
 	  type = "ingress"
-		ip_protocol = "tcp"
+	ip_protocol = "tcp"
 	  #nic_type  = "internet"
 		nic_type = "intranet"
 		policy = "accept"
