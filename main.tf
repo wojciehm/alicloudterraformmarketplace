@@ -14,8 +14,8 @@ resource "alicloud_vswitch" "main"{
 		cidr_block 				= "${var.vswitch_cidr}"
 	  availability_zone = "${var.vpc_availability_zone}"
 	  depends_on 				= [
-	  									"alicloud_vpc.main",
-	  									]
+	  "alicloud_vpc.main",
+	  ]
 }
 ################### SG ###############
 resource "alicloud_security_group" "main" {
