@@ -1,11 +1,11 @@
 ######### Access Key ###############
 variable "access_key" {
 	  type = "string"
-	  default = "XXXXXXXXXX"
+	  default = "XXX"
 }
 variable "secret_key" {
 	  type = "string"
-	  default = "XXXXXXXXX"
+	  default = "XXX"
 }
 variable "region" {
 	  type = "string"
@@ -76,12 +76,6 @@ variable "ecs_password" {
 }
 variable "availability_zones" {
   default = "eu-central-1a"
-}
-variable "internet_charge_type" {
-  default = "PayByTraffic"
-}
-variable "internet_max_bandwidth_out" {
-  default = 1
 }
 variable "disk_category" {
   default = "cloud_ssd"

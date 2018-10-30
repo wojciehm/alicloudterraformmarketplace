@@ -68,9 +68,6 @@ resource "alicloud_instance" "instance" {
   availability_zone = "${var.vpc_availability_zone}"
 	security_groups   = ["${alicloud_security_group.main.id}"]
   vswitch_id				= "${alicloud_vswitch.main.id}"
-  #internet_charge_type       = "${var.internet_charge_type}"
-  #internet_max_bandwidth_out = "${var.internet_max_bandwidth_out}"
-  #password = "${var.ecs_password}"
   instance_charge_type = "PostPaid"
   system_disk_category = "cloud_efficiency"
 
